@@ -1,5 +1,5 @@
 import {StyleSheet, View, Button, Text, Alert} from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useTransition} from 'react';
 import Screen from '../components/Screen';
 import AppForm from '../components/forms/AppForm';
 import AppFormFeild from '../components/forms/AppFormFeild';
@@ -14,6 +14,8 @@ import SubmitButton from '../components/forms/SubmitButton';
 import {Formik, useFormikContext} from 'formik';
 import postData from '../api/postData';
 import Loader from '../components/Loader';
+import i18n from '../lang/i18n.config';
+import {useTranslation} from 'react-i18next';
 
 const validationSchema = Yup.object().shape({
   reporter_name: Yup.string().required().label('Reporter Name'),
@@ -25,7 +27,7 @@ const validationSchema = Yup.object().shape({
   distric_id: Yup.string().required().label('Hospital Name'),
   first_name: Yup.string().required().label('Patient Fist Name'),
   last_name: Yup.string().required().label('Patient Last Name'),
-  patientPhone: Yup.string().required().label('Patient Phone Number'),
+  phone_number: Yup.string().required().label('Patient Phone Number'),
   post_code: Yup.string().required().label('Patient Postal Code'),
   gender: Yup.string().required().label('Patient Gender'),
   age: Yup.string().required().label('Patient Age'),
@@ -35,6 +37,7 @@ const validationSchema = Yup.object().shape({
   department_id: Yup.string().required().label('Select Department'),
   noa: Yup.string().required().label('Number Of Antibiotics'),
   no_of_other: Yup.string().required().label('Number Of Others'),
+  image: Yup.mixed().required().label('Prescripton Image'),
 });
 
 const ReporterInfoScreen = () => {
@@ -48,7 +51,7 @@ const ReporterInfoScreen = () => {
     distric_id: '',
     first_name: '',
     last_name: '',
-    patientPhone: '',
+    phone_number: '',
     post_code: '',
     gender: '',
     age: '',
@@ -69,6 +72,9 @@ const ReporterInfoScreen = () => {
     end_date: '',
     image: '',
     file: '',
+    privew_image: '',
+    drug_sensitive: '',
+    image: '',
   };
 
   const [AntibioticList, setAntibioticList] = useState([1]);
@@ -84,6 +90,7 @@ const ReporterInfoScreen = () => {
     department,
   } = useContext(AppContext);
   const [anyPreviousTreatment, setanyPreviousTreatment] = useState('No');
+  const [drugensitive, setDrugensitive] = useState('No');
 
   const [modalVisibility, setModalVisibility] = useState(false);
 
@@ -112,10 +119,13 @@ const ReporterInfoScreen = () => {
       resetForm({values: initialValues});
       setAntibioticList([1]);
       setanyPreviousTreatment('No');
+      setDrugensitive('No');
       Alert.alert('Success', 'data successfully submitted');
     }
     console.log(res);
   };
+
+  const {t} = useTranslation();
 
   return (
     <Screen isCenter={false}>
@@ -159,12 +169,12 @@ const ReporterInfoScreen = () => {
             color: '#333',
             marginTop: 20,
           }}>
-          Patient Information
+          {t('Patient Information')}
         </Text>
-        <AppFormFeild name="first_name" placeholder="Patient Fist Name" />
+        <AppFormFeild name="first_name" placeholder="Patient First Name" />
         <AppFormFeild name="last_name" placeholder="Patient Last Name" />
         <AppFormFeild
-          name="patientPhone"
+          name="phone_number"
           keyboardType="number-pad"
           placeholder="Patient Phone Number"
         />
@@ -213,20 +223,30 @@ const ReporterInfoScreen = () => {
           <AppFormFeild
             name="no_of_other"
             keyboardType="number-pad"
-            placeholder="Number Of Others"
+            placeholder="Number Of Others Drug"
             width="49%"
           />
         </View>
         <AppFormSelect
           placeholder="Do you have any report of culture sensitivity?"
           name={`any_report`}
-          items={[{name: 'Yes'}, {name: 'No'}]}
+          items={[{name: 'No'}, {name: 'Yes'}]}
+          anyPreviousTreatment={drugensitive}
+          setanyPreviousTreatment={setDrugensitive}
         />
-        <AppFormSelect
-          placeholder=""
-          name={`drug_sensitive`}
-          items={[{name: 'drug_sensitive_yes'}, {name: 'drug_sensitive_no'}]}
-        />
+        {drugensitive == 'Yes' ? (
+          <AppFormSelect
+            placeholder=""
+            name={`drug_sensitive`}
+            items={[
+              {name: 'What Were the Drug Are Sensitive'},
+              {name: 'What Were the Drug Are Non Sensitive'},
+            ]}
+          />
+        ) : (
+          ''
+        )}
+
         <AppFormSelect
           items={[{name: 'No'}, {name: 'Yes'}]}
           name="anyPreviousTreatment"
@@ -273,7 +293,10 @@ const ReporterInfoScreen = () => {
               name="antibiotic_protect"
               placeholder="Did You Have Any history Of Antibiotic Resistance ?"
             />
-            <ImagePicker placeholder="Previews Prescription Image" />
+            <ImagePicker
+              placeholder="Previews Prescription Image"
+              name="privew_image"
+            />
           </View>
         ) : null}
 
@@ -292,7 +315,7 @@ const ReporterInfoScreen = () => {
             color: '#333',
             marginTop: 20,
           }}>
-          Antibiotic
+          {t('Antibiotic')}
         </Text>
         {AntibioticList?.map((id, index) => (
           <View key={index}>

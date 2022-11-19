@@ -3,6 +3,7 @@ import {useFormikContext} from 'formik';
 import {Text, View} from 'react-native';
 import RadioGroup from 'react-native-radio-buttons-group';
 import ErrorMessage from './ErrorMessage';
+import {useTranslation} from 'react-i18next';
 
 const AppFormRadio = ({
   width = '100%',
@@ -13,24 +14,24 @@ const AppFormRadio = ({
 }) => {
   const {setFieldValue, setFieldTouched, touched, errors, values} =
     useFormikContext();
-
+  const {t} = useTranslation();
   const isInvalid = errors[name] && touched[name] ? true : false;
   // console.log(errors[name]);
 
   const [radioButtonsData, setradioButtonsData] = useState([
     {
       id: '1', // acts as primary key, should be unique and non-empty string
-      label: 'Male',
+      label: t('Male'),
       value: 'Male',
     },
     {
       id: '2',
-      label: 'Female',
+      label: t('Female'),
       value: 'Female',
     },
     {
       id: '3',
-      label: 'Others',
+      label: t('Others'),
       value: 'Others',
     },
   ]);
@@ -50,7 +51,7 @@ const AppFormRadio = ({
           fontSize: 16,
           color: '#000000',
         }}>
-        {label ? label : placeholder}
+        {t(label ? label : placeholder)}
       </Text>
       <RadioGroup
         radioButtons={radioButtonsData}

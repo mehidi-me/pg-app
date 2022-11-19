@@ -5,6 +5,7 @@ import AppContext from '../../AppContext';
 import {View, Text} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import ErrorMessage from './ErrorMessage';
+import {useTranslation} from 'react-i18next';
 
 const AppFormSelect = ({
   width = '100%',
@@ -15,11 +16,13 @@ const AppFormSelect = ({
   items = [],
   setanyPreviousTreatment,
   anyPreviousTreatment,
+  onChangeMedicine,
   index = 0,
   ...otherProps
 }) => {
   const {setFieldValue, setFieldTouched, touched, errors, values} =
     useFormikContext();
+  const {t} = useTranslation();
   // if (rowname == 'medicine_id' || rowname == 'medicine_used') {
   //   console.log(values[rowname][index]);
   // }
@@ -27,6 +30,14 @@ const AppFormSelect = ({
     setFieldValue(name, items[0]?.id ? items[0]?.id : items[0]?.name);
   }, [items]);
   const isInvalid = touched[name] && errors[name] ? true : false;
+
+  const selectOnValueChange = text => {
+    if (name == 'anyPreviousTreatment' || name == 'any_report')
+      setanyPreviousTreatment(text);
+    if (name.includes('medicine_id')) onChangeMedicine(text);
+    setFieldValue(name, text);
+    //console.log(text);
+  };
   // console.log(name);
   return (
     // <Box alignItems="center" py={1}>
@@ -72,7 +83,7 @@ const AppFormSelect = ({
           fontSize: 16,
           color: '#000000',
         }}>
-        {label ? label : placeholder}
+        {t(label ? label : placeholder)}
       </Text>
       <View
         style={{
@@ -95,11 +106,7 @@ const AppFormSelect = ({
                 : values[name]
               : values[name]
           }
-          onValueChange={text =>
-            name == 'anyPreviousTreatment'
-              ? setanyPreviousTreatment(text)
-              : setFieldValue(name, text)
-          }
+          onValueChange={text => selectOnValueChange(text)}
           //mode="dropdown"
           // itemStyle={{color: 'red'}}
           prompt={placeholder}>

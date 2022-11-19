@@ -5,6 +5,7 @@ import ReporterInfoScreen from '../screen/ReporterInfoScreen';
 import PatientInfoScreen from '../screen/PatientInfoScreen';
 import AppContext from '../AppContext';
 import allGetData from '../api/allGetData';
+import {useTranslation} from 'react-i18next';
 
 const Tab = createMaterialTopTabNavigator();
 const HomeTabNavigator = () => {
@@ -29,8 +30,10 @@ const HomeTabNavigator = () => {
       setTerget(res.data);
     }
 
-    console.log(res);
+    //console.log(res);
   };
+
+  const {t} = useTranslation();
 
   useEffect(() => {
     if (!area.length) {
@@ -56,14 +59,20 @@ const HomeTabNavigator = () => {
   if (loading) {
     return (
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text>Loading..</Text>
+        <Text style={{color: '#000'}}>Loading..</Text>
       </View>
     );
   }
   return (
     <Tab.Navigator screenOptions={{swipeEnabled: false, lazy: true}}>
-      <Tab.Screen name="Reporter Information" component={ReporterInfoScreen} />
-      <Tab.Screen name="Patient Information" component={PatientInfoScreen} />
+      <Tab.Screen
+        name={t('Reporter Information')}
+        component={ReporterInfoScreen}
+      />
+      <Tab.Screen
+        name={t('Patient Information')}
+        component={PatientInfoScreen}
+      />
     </Tab.Navigator>
   );
 };

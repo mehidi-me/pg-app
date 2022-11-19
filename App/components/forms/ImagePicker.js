@@ -11,6 +11,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useFormikContext} from 'formik';
 import FilePickerManager from 'react-native-file-picker';
+import {useTranslation} from 'react-i18next';
+import ErrorMessage from './ErrorMessage';
 
 const ImagePicker = ({
   width = '100%',
@@ -19,9 +21,10 @@ const ImagePicker = ({
   name,
   ...otherProps
 }) => {
-  const {setFieldValue} = useFormikContext();
+  const {setFieldValue, errors, touched} = useFormikContext();
   const [FileName, setFileName] = useState(null);
   const [imgUri, setImgUri] = useState(null);
+  const {t} = useTranslation();
   const chosehImage = async () => {
     if (name == 'file') {
       FilePickerManager.showFilePicker(null, response => {
@@ -64,7 +67,7 @@ const ImagePicker = ({
           fontSize: 16,
           color: '#000000',
         }}>
-        {label ? label : placeholder}
+        {t(label ? label : placeholder)}
       </Text>
       <TouchableOpacity
         style={{
@@ -79,7 +82,7 @@ const ImagePicker = ({
         }}
         onPress={chosehImage}>
         <FontAwesome name="cloud-upload" size={22} color="#fff" />
-        <Text style={{color: '#fff'}}>Upload Image</Text>
+        <Text style={{color: '#fff'}}>{t('Upload Image')}</Text>
       </TouchableOpacity>
       {FileName ? <Text>{FileName}</Text> : null}
       {imgUri ? (
@@ -119,6 +122,7 @@ const ImagePicker = ({
           />
         </View>
       ) : null}
+      <ErrorMessage error={errors[name]} visible={touched[name]} />
     </View>
   );
 };

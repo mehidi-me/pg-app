@@ -16,10 +16,12 @@ import {
 
 //import DatePicker from the package we installed
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 import {useFormikContext} from 'formik';
+import {useTranslation} from 'react-i18next';
 const AppDatePicker = ({width = '100%', label = '', placeholder, name}) => {
   const {setFieldValue} = useFormikContext();
-
+  const {t} = useTranslation();
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
 
@@ -31,7 +33,7 @@ const AppDatePicker = ({width = '100%', label = '', placeholder, name}) => {
           fontSize: 16,
           color: '#000000',
         }}>
-        {label ? label : placeholder}
+        {t(label ? label : placeholder)}
       </Text>
 
       <TouchableOpacity onPress={() => setShow(true)}>
@@ -39,7 +41,7 @@ const AppDatePicker = ({width = '100%', label = '', placeholder, name}) => {
           style={styles.datePickerStyle}
           id={name}
           value={date.toLocaleString()}
-          placeholder={placeholder}
+          placeholder={t(placeholder)}
           editable={false}
           // InputRightElement={}
         />

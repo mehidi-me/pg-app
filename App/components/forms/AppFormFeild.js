@@ -1,24 +1,30 @@
-import React from 'react';
-import {FastField, useFormikContext} from 'formik';
+import React, {useEffect, useState} from 'react';
+import {FastField, Field, useFormikContext} from 'formik';
 import {View, Text, TextInput} from 'react-native';
 import ErrorMessage from './ErrorMessage';
+import {useTranslation} from 'react-i18next';
 
 const AppFormFeild = ({
   width = '100%',
   label = '',
   placeholder,
   name,
+  editable = true,
+  value = '',
   ...otherProps
 }) => {
   const {setFieldValue, setFieldTouched, touched, errors, values} =
     useFormikContext();
+  const {t} = useTranslation();
+  //const [feildValue, setFeildValue] = useState('');
 
-  // const isInvalid = ;
-  // console.log(errors[name]);
-
+  useEffect(() => {
+    setFieldValue(name, value);
+  }, [value]);
+  //console.log(feildValue);
   return (
     <View style={{width: 320, marginVertical: 10}}>
-      <FastField name={name}>
+      <Field name={name}>
         {({field, form, meta}) => (
           <>
             <Text
@@ -27,7 +33,7 @@ const AppFormFeild = ({
                 fontSize: 16,
                 color: '#000000',
               }}>
-              {label ? label : placeholder}
+              {t(label ? label : placeholder)}
             </Text>
             <TextInput
               style={{
@@ -38,10 +44,11 @@ const AppFormFeild = ({
                 color: '#000',
               }}
               id={name}
+              editable={editable}
               onChangeText={text => form.setFieldValue(field.name, text, true)}
-              value={values[field.name]}
+              value={value ? value : values[field.name]}
               onBlur={() => form.setFieldTouched(field.name)}
-              placeholder={placeholder}
+              placeholder={t(placeholder)}
             />
 
             <ErrorMessage error={meta.error} visible={meta.touched} />
@@ -60,7 +67,7 @@ const AppFormFeild = ({
 
           // </FormControl>
         )}
-      </FastField>
+      </Field>
     </View>
   );
 };
